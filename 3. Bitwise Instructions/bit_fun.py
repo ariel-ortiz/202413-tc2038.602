@@ -24,10 +24,7 @@ def int_mul(n: int, m: int) -> int:
 
 
 def bin_with_num_bits(n: int, b: int) -> str:
-    if b < 1:
-        raise ValueError(
-            f'The number of bits provided ({b}) should be at least 1')
-    if n >= (1 << b) or n < -(1 << (b - 1)):
+    if b < 1 or n >= (1 << b) or n < -(1 << (b - 1)):
         raise ValueError(f"Can't fit {n} into {b} bits")
     if n < 0:
         n = (1 << b) + n
