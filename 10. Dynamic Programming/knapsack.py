@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Item:
     name: str
     weight: int
@@ -11,14 +11,14 @@ class Item:
 @dataclass
 class Entry:
     value: int
-    items: list[Item]
+    items: set[Item]
 
 
 type Table = list[list[Entry]]
 
 
 def solve(size: int, items: list[Item]) -> Table:
-    dp: Table = [[Entry(0, []) for _ in range(size + 1)]
+    dp: Table = [[Entry(0, set()) for _ in range(size + 1)]
                  for _ in range(len(items))]
     for i in range(len(items)):
         for j in range(1, size + 1):
@@ -29,7 +29,7 @@ def solve(size: int, items: list[Item]) -> Table:
 def compute_cell(item: Item, dp: Table, i: int, j: int) -> None:
     if i == 0:
         if item.weight <= j:
-            dp[0][j] = Entry(item.value, [item])
+            dp[0][j] = Entry(item.value, {item})
         return
     previous_max: Entry = dp[i - 1][j]
     dp[i][j] = previous_max
@@ -37,7 +37,7 @@ def compute_cell(item: Item, dp: Table, i: int, j: int) -> None:
         remaining_space: Entry = dp[i - 1][j - item.weight]
         current_value = item.value + remaining_space.value
         if current_value > previous_max.value:
-            dp[i][j] = Entry(current_value, remaining_space.items + [item])
+            dp[i][j] = Entry(current_value, remaining_space.items | {item})
 
 
 if __name__ == '__main__':
