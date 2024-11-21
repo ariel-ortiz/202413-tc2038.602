@@ -14,7 +14,7 @@ class Entry:
     items: list[Item]
 
 
-Table = list[list[Entry]]
+type Table = list[list[Entry]]
 
 
 def solve(size: int, items: list[Item]) -> Table:
@@ -29,23 +29,27 @@ def solve(size: int, items: list[Item]) -> Table:
 def compute_cell(item: Item, dp: Table, i: int, j: int) -> None:
     if i == 0:
         if item.weight <= j:
-            dp[i][j] = Entry(item.value, [item])
-    else:
-        previous: Entry = dp[i - 1][j]
-        dp[i][j] = previous
-        if item.weight <= j:
-            remaining_space: Entry = dp[i - 1][j - item.weight]
-            current_value: int = item.value + remaining_space.value
-            if current_value > previous.value:
-                dp[i][j] = Entry(current_value,
-                                 remaining_space.items + [item])
+            dp[0][j] = Entry(item.value, [item])
+        return
+    previous_max: Entry = dp[i - 1][j]
+    dp[i][j] = previous_max
+    if item.weight <= j:
+        remaining_space: Entry = dp[i - 1][j - item.weight]
+        current_value = item.value + remaining_space.value
+        if current_value > previous_max.value:
+            dp[i][j] = Entry(current_value, remaining_space.items + [item])
 
 
 if __name__ == '__main__':
     from pprint import pprint
-    table: Table = solve(4, [Item('Stereo', 4, 3_000),
-                             Item('Laptop', 3, 2_000),
-                             Item('Guitar', 1, 1_500),
-                             Item('IPhone', 1, 2_000),
-                             Item('Collar', 1, 8_000)])
-    pprint(table)
+    # dp: Table = solve(6, [Item('water', 3, 10),
+    #                       Item('book', 1, 3),
+    #                       Item('food', 2, 9),
+    #                       Item('jacket', 2, 5),
+    #                       Item('camera', 1, 6)])
+    dp: Table = solve(4, [Item('laptop', 3, 2_000),
+                          Item('iphone', 1, 2_000),
+                          Item('guitar', 1, 1_500),
+                          Item('collar', 1, 8_000),
+                          Item('stereo', 4, 3_000)])
+    pprint(dp)
